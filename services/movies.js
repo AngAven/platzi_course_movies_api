@@ -1,29 +1,29 @@
-const { moviesMock } = require('../utils/mocks/movies')
+const MongoLib = require('../lib/mongo')
 
-class MoviesServices {
+class MoviesService {
+  constructor() {
+    this.collection = 'movies'
+    this.mongoDB = new MongoLib()
+  }
 
-  async getMovies(){
-    const movies = await Promise.resolve(moviesMock)
+  async getMovies({ tags }) {
+    const query = tags && { tgas: { $in: tags } }
+    const movies = await this.mongoDB.getAll(this.collection, query)
     return movies || []
   }
 
-  async getMovie(){
-    const movie = await Promise.resolve(moviesMock[0])
-    return movie || []
+  async getMovie({ movieId }){
+    const movie = await this.mongoDB.get(this.collection, movieId)
+    return movie || {}
   }
 
-  async createMovie(){
-    const createdMovieid = await Promise.resolve(moviesMock[0].id)
+  async createMovie({ movie }){
+    const createdMovieid = await this.mongoDB.create(this.collection, movie)
     return createdMovieid
   }
 
-  async updateMovie(){
-    const updatedMovieId = await Promise.resolve(moviesMock[0].id)
-    return updatedMovieId
-  }
-
-  async patchMovie(){
-    const updatedMovieId = await Promise.resolve(moviesMock[0].id)
+  async updateMovie({ movieId, movie } = {}){
+    const updatedMovieId = await this.mongoDB.update(this.collection, movieId, movie)
     return updatedMovieId
   }
 
@@ -34,4 +34,4 @@ class MoviesServices {
 
 }
 
-module.exports = MoviesServices
+module.exports = MoviesService
