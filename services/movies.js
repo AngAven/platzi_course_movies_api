@@ -7,7 +7,7 @@ class MoviesService {
   }
 
   async getMovies({ tags }) {
-    const query = tags && { tgas: { $in: tags } }
+    const query = tags && { tags: { $in: tags } }
     const movies = await this.mongoDB.getAll(this.collection, query)
     return movies || []
   }
@@ -18,8 +18,8 @@ class MoviesService {
   }
 
   async createMovie({ movie }){
-    const createdMovieid = await this.mongoDB.create(this.collection, movie)
-    return createdMovieid
+    const createdMovieId = await this.mongoDB.create(this.collection, movie)
+    return createdMovieId
   }
 
   async updateMovie({ movieId, movie } = {}){
@@ -27,11 +27,10 @@ class MoviesService {
     return updatedMovieId
   }
 
-  async deleteMovie(){
-    const deletedMovieId = await Promise.resolve(moviesMock[0].id)
+  async deleteMovie({ movieId } ){
+    const deletedMovieId = await this.mongoDB.delete(this.collection, movieId)
     return deletedMovieId
   }
-
 }
 
 module.exports = MoviesService

@@ -9,8 +9,10 @@ function moviesAPI(app){
   router.get('/', async function(req, res, next){
     const {tags} = req.query
 
+    // Ejemplo de manejo de errores en una función asincrona en un bloque try ... catch
     try {
       const movies = await moviesService.getMovies({tags})
+      // throw new Error('Error getting movies') // para probar middleware de errores
 
       res.status(200).json({
         data: movies,
@@ -91,8 +93,9 @@ function moviesAPI(app){
 
   router.delete('/:movieId', async function(req, res, next){
     const { movieId } = req.params
+    console.log('movie id ------> ', {movieId})
     try {
-      const deletedMovieId = await moviesService.deleteMovie()
+      const deletedMovieId = await moviesService.deleteMovie({ movieId })
       res.status(200).json({
         data: deletedMovieId,
         message: 'movie deleted'
