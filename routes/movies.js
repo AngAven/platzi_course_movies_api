@@ -12,7 +12,9 @@ function moviesAPI(app){
     // Ejemplo de manejo de errores en una función asincrona en un bloque try ... catch
     try {
       const movies = await moviesService.getMovies({tags})
-      // throw new Error('Error getting movies') // para probar middleware de errores
+
+      // para probar middleware de errores
+      // throw new Error('Error getting movies')
 
       res.status(200).json({
         data: movies,
