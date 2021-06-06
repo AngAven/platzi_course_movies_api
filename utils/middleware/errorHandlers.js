@@ -3,32 +3,31 @@ const { config } = require('../../config/index')
 
 function withErrorStack(error, stack) {
   if (config.dev){
-    console.log('Error desde el middleware de manejo de errores', error)
     return { ...error, stack}
   }
 
   return error
 }
 
-function logErrors(err, req, res, next){
-  console.log(err)
-  next(err)
+function logErrors(error, req, res, next){
+  next(error)
 }
 
-function wrapErrors(err, req, res, next) {
-  if (!err.isBoom){
-    next(boom.badImplementation(err))
+function wrapErrors(error, req, res, next) {
+  if (!error.isBoom){
+    next(boom.badImplementation(error))
   }
 
-  next(err)
+  next(error)
 }
 
-function errorHandler(err, req, res, next) {
-  console.log('Error desde errorHandler ---> ', err)
-  const { outout: {statusCode, payload} } = err
+function errorHandler(error, req, res, next) {
+  const {
+    output: {statusCode, payload}
+  } = error
 
   res.status(statusCode)
-  res.json(withErrorStack(payload, err.stack))
+  res.json(withErrorStack(payload, error.stack))
 }
 
 module.exports = {

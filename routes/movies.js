@@ -1,111 +1,126 @@
 const express = require('express')
 const MoviesService = require('../services/movies')
+const {
+  movieIdSchema,
+  createMovieSchema,
+  updateMovieSchema
+} = require('../utils/schemas/movies')
+const validationHandler = require('../utils/middleware/validationHandler')
 
-function moviesAPI(app){
+function moviesAPI(app) {
   const router = express.Router()
   const moviesService = new MoviesService()
   app.use('/api/movies', router)
 
-  router.get('/', async function(req, res, next){
-    const {tags} = req.query
+  router.get('/',
+    async function(
+      req,
+      res,
+      next) {
+      const { tags } = req.query
 
-    // Ejemplo de manejo de errores en una función asincrona en un bloque try ... catch
-    try {
-      const movies = await moviesService.getMovies({tags})
+      // Ejemplo de manejo de errores en una función asincrona en un bloque try ... catch
+      try {
+        const movies = await moviesService.getMovies({ tags })
 
-      // para probar middleware de errores
-      // throw new Error('Error getting movies')
+        // para probar middleware de errores
+        // throw new Error('Error getting movies')
 
-      res.status(200).json({
-        data: movies,
-        message: 'Movies listed'
-      })
-    } catch (e) {
-      next(e)
-    }
-  })
+        res.status(200).json({
+          data: movies,
+          message: 'Movies listed'
+        })
+      } catch (e) {
+        next(e)
+      }
+    })
 
-  router.get('/:movieId', async function(req, res, next){
-    const {movieId} = req.params
+  router.get('/:movieId',
+    // middlewares
+    validationHandler({ movieId: movieIdSchema }, 'params'),
+    async function(
+      req,
+      res,
+      next) {
+      const { movieId } = req.params
 
-    try {
-      const movie = await moviesService.getMovie({movieId})
+      try {
+        const movie = await moviesService.getMovie({ movieId })
 
-      res.status(200).json({
-        data: movie,
-        message: 'Movie retrieved'
-      })
-    } catch (e) {
-      next(e)
-    }
-  })
+        res.status(200).json({
+          data: movie,
+          message: 'Movie retrieved'
+        })
+      } catch (e) {
+        next(e)
+      }
+    })
 
-  router.post('/', async function(req, res, next){
-    const { body: movie } = req
+  router.post('/',
+    // middlewares
+    validationHandler(createMovieSchema),
+    async function(
+      req,
+      res,
+      next) {
+      const { body: movie } = req
 
-    try {
-      const createMovieId = await moviesService.createMovie({movie})
+      try {
+        const createMovieId = await moviesService.createMovie({ movie })
 
-      res.status(201).json({
-        data: createMovieId,
-        message: 'Movie created'
-      })
-    } catch (e) {
-      next(e)
-    }
-  })
+        res.status(201).json({
+          data: createMovieId,
+          message: 'Movie created'
+        })
+      } catch (e) {
+        next(e)
+      }
+    })
 
-  router.put('/:movieId', async function(req, res, next){
-    const { movieId } = req.params
-    const { body: movie } = req
+  router.put('/:movieId',
+    // middlewares
+    validationHandler({ movieId: movieIdSchema }, 'params'),
+    validationHandler(updateMovieSchema),
+    async function(
+      req,
+      res,
+      next) {
+      const { movieId } = req.params
+      const { body: movie } = req
 
-    try {
-      const updatedMovieId = await moviesService.updateMovie({
-        movieId,
-        movie,
-      })
+      try {
+        const updatedMovieId = await moviesService.updateMovie({
+          movieId,
+          movie
+        })
 
-      res.status(200).json({
-        data: updatedMovieId,
-        message: 'Movie replaced'
-      })
-    } catch (e) {
-      next(e)
-    }
-  })
+        res.status(200).json({
+          data: updatedMovieId,
+          message: 'Movie replaced'
+        })
+      } catch (e) {
+        next(e)
+      }
+    })
 
-  router.patch('/:movieId', async function(req, res, next){
-    const { movieId } = req.params
-    const { body: movie } = req
-
-    try {
-      const updatedMovieId = await moviesService.patchMovie({
-        movieId,
-        movie,
-      })
-
-      res.status(200).json({
-        data: updatedMovieId,
-        message: 'Movie patch'
-      })
-    } catch (e) {
-      next(e)
-    }
-  })
-
-  router.delete('/:movieId', async function(req, res, next){
-    const { movieId } = req.params
-    console.log('movie id ------> ', {movieId})
-    try {
-      const deletedMovieId = await moviesService.deleteMovie({ movieId })
-      res.status(200).json({
-        data: deletedMovieId,
-        message: 'movie deleted'
-      })
-    } catch (e) {
-      next(e)
-    }
-  })
+  router.delete('/:movieId',
+    // middlewares
+    validationHandler({ movieId: movieIdSchema }, 'params'),
+    async function(
+      req,
+      res,
+      next) {
+      const { movieId } = req.params
+      try {
+        const deletedMovieId = await moviesService.deleteMovie({ movieId })
+        res.status(200).json({
+          data: deletedMovieId,
+          message: 'movie deleted'
+        })
+      } catch (e) {
+        next(e)
+      }
+    })
 }
 
 module.exports = moviesAPI

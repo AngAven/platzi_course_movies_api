@@ -1,8 +1,10 @@
 // Capa de validación de datos
 const boom = require('@hapi/boom')
+const joi = require('@hapi/joi')
 
-function validate() {
-  return false
+function validate(data, schema) {
+  const { error } = joi.object(schema).validate(data, schema)
+  return error
 }
 
 function validationHandler(schema, check = 'body') {
