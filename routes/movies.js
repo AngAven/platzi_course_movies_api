@@ -1,15 +1,16 @@
 const express = require('express')
 const MoviesService = require('../services/movies')
+const validationHandler = require('../utils/middleware/validationHandler')
 const {
   movieIdSchema,
   createMovieSchema,
   updateMovieSchema
 } = require('../utils/schemas/movies')
-const validationHandler = require('../utils/middleware/validationHandler')
 
 function moviesAPI(app) {
   const router = express.Router()
   const moviesService = new MoviesService()
+
   app.use('/api/movies', router)
 
   router.get('/',
