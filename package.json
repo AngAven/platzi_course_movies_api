@@ -6,7 +6,9 @@
   "scripts": {
     "test": "mocha --exit",
     "dev": "DEBUG=app:* nodemon index",
-    "start": "NODE_ENV=production node index"
+    "start": "NODE_ENV=production node index",
+    "cover": "nyc npm run test",
+    "report": "nyc report --reporter=html && open coverage/index.html"
   },
   "keywords": [],
   "author": "",
@@ -39,5 +41,9 @@
       "eslint --fix",
       "git add"
     ]
+  },
+  "nyc": {
+    "all": true,
+    "include": ["routes", "services", "lib", "utilits"]
   }
 }
