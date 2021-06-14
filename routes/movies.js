@@ -1,6 +1,8 @@
 const express = require('express')
 const MoviesService = require('../services/movies')
 const validationHandler = require('../utils/middleware/validationHandler')
+const cacheResponse = require('../utils/cacheResponse')
+const { FIVE_MINUTES_IN_SECONDS, SIXTY_MINUTES_IN_SECONDS } = require('../utils/time')
 const {
   movieIdSchema,
   createMovieSchema,
@@ -14,10 +16,12 @@ function moviesAPI(app) {
   app.use('/api/movies', router)
 
   router.get('/',
+    // middleware
     async function(
       req,
       res,
       next) {
+      cacheResponse(res, FIVE_MINUTES_IN_SECONDS)
       const { tags } = req.query
 
       // Ejemplo de manejo de errores en una función asincrona en un bloque try ... catch
@@ -43,6 +47,7 @@ function moviesAPI(app) {
       req,
       res,
       next) {
+      cacheResponse(res, SIXTY_MINUTES_IN_SECONDS)
       const { movieId } = req.params
 
       try {
